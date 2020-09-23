@@ -6,15 +6,15 @@
 ##########方法一：最終單獨保存在每個文件夾下
 rm(list=ls())
 
-# setwd("E:/cnblogs")                                    #設定工作目錄
+# setwd("E:/cnblogs")                                    #設定工作目錄【修改】
 setwd(getwd())
 PathName = setwd(getwd())
 FolderName = c("Metastasis_Breast_DN") 
 
 # library(xlsx)
 
-first_category_name = list.files(FolderName)            #list.files命令得到"OOOP”文件夾下所有文件夾的名稱
-dir = paste("/",FolderName,"/",first_category_name,sep="")   #用paste命令構建路徑變數dir,第一級目錄的詳細路徑
+first_category_name = list.files(FolderName)            #list.files命令得到"OOOP”文件夾下所有文件夾的名稱【修改】
+dir = paste("/",FolderName,"/",first_category_name,sep="")   #用paste命令構建路徑變數dir,第一級目錄的詳細路徑【修改】
 n = length(dir)                                       #讀取dir長度，也就是：總共有多少個一級目錄                                                     
 
 n_sub<-rep(0,n)
@@ -29,14 +29,23 @@ for(i in 1:n){         #對於每個一級目錄(文件夾)
   b=list.files(dir[i]) #b是列出每個一級目錄(文件夾)中每個xlsx文件的名稱
   n_sub[i]=length(b)   #得到一級目錄(文件夾)下xlsx的文件個數:n_sub
   
+  #merge_1<-read.table(paste0(PathName,"/",FolderName,"_Output_List.txt"))#
+  #dim(merge_1)
+  #names(merge_1) #<-c('序號','APP','2016-01-11','2016-01-12','2016-01-13','2016-01-14','2016-01-15','2016-01-16','2016-01-17')#我的文件列名，根據你具體情況修改【修改】
+  #merge_1$second_category<-'second_category'
+  #merge_1$first_category<-'first_category'
+  #merge_1<-merge_1[1,-1]    #這一段的目的是讀取一個xlsx文件樣例，得到一個初始的dataframe(不含數據)，免除了後面重新建立datafram的麻煩，用於後面文件的rbind拼接
+  
   for(j in 1:n_sub[i]){     #對於每個一級目錄(文件夾)下的每個txt文件
     new_1 <- read.table(file=paste(PathName,dir[i],sep=""),fill = TRUE) #讀取xlsx文件
-    new_1<-new_1[-1:-2,1]     #因為實際數據需要（根據實際讀取txt文件的情況進行修改）
-
+    #    names(new_1)<-c('序號','APP','2016-01-11','2016-01-12','2016-01-13','2016-01-14','2016-01-15','2016-01-16','2016-01-17') #【修改】
+    new_1<-new_1[-1:-2,1]     #因為實際數據需要，刪除第一行和第一列（根據實際讀取xlsx文件的情況進行修改）
+    #    new_1$second_category<-substr(b[j],1,4)        #二級目錄的名稱是xlsx的文件名。
+    #    new_1$first_category<-first_category_name[i]   #一級目錄的名稱是“文件夾名”
+    
   }
   merge_1<- c(merge_1,new_1)
 }
 merge_1 <- unique(data.frame(unlist(merge_1)))
 write.table(merge_1,paste(PathName,'/',FolderName,'_merge.txt',sep=''),row.names = F,col.names= F)#單獨保存在每個文件夾下
 write.table(merge_1,paste(PathName,'/',FolderName,'_merge.csv',sep=''),row.names = FALSE,col.names= FALSE)#單獨保存在每個文件夾下
-
